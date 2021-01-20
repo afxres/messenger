@@ -1,0 +1,122 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Style x:Key="GeometryButtonFocusStyle">
+        <Setter Property="Control.Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Ellipse Margin="4" Stroke="{DynamicResource Generic.Focus.Brush}" StrokeDashArray="2" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!--圆形图标按钮-->
+    <Style x:Key="GeometryButtonStyle" TargetType="{x:Type Button}">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="#FFA0A0A0" />
+        <Setter Property="FocusVisualStyle" Value="{StaticResource GeometryButtonFocusStyle}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Grid>
+                        <Ellipse Fill="{TemplateBinding Background}" />
+                        <ContentPresenter Focusable="False" HorizontalAlignment="Center" VerticalAlignment="Center" RecognizesAccessKey="True" SnapsToDevicePixels="True" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="#FF404040" />
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Background" Value="#FF303030" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!--发送-->
+    <Path x:Key="PathArrow" x:Shared="False" Stroke="#C0C0C0" StrokeThickness="1.5" StrokeLineJoin="Round" Width="40" Height="40">
+        <Path.Data>
+            <GeometryGroup>
+                <EllipseGeometry Center="20,20" RadiusX="18" RadiusY="18" />
+                <PathGeometry Figures="M 9.5,9.5 32,20 9.5,30.5 15.5,20 Z" />
+            </GeometryGroup>
+        </Path.Data>
+    </Path>
+
+    <!--选择图片-->
+    <Path x:Key="PathImage" x:Shared="False" Stroke="#C0C0C0" StrokeThickness="1" Width="32" Height="32">
+        <Path.Data>
+            <GeometryGroup>
+                <PathGeometry Figures="M 5.5,8.5 L 5.5,23.5 26.5,23.5 26.5,8.5 Z" />
+                <PathGeometry Figures="M 5.5,17.5 L 9.5,13.5 17.5,17.5 21.5,13.5 25.5,15.5" />
+            </GeometryGroup>
+        </Path.Data>
+    </Path>
+
+    <!--清空消息-->
+    <Path x:Key="PathRemove" x:Shared="False" Stroke="#C0C0C0" StrokeThickness="1" Width="32" Height="32">
+        <Path.Data>
+            <GeometryGroup>
+                <LineGeometry StartPoint="12,6.5" EndPoint="20,6.5" />
+                <LineGeometry StartPoint="8,9.5" EndPoint="24,9.5" />
+                <PathGeometry Figures="M 10.5,12 L 10.5,23.5 21.5,23.5 21.5,12" />
+            </GeometryGroup>
+        </Path.Data>
+    </Path>
+
+    <Path x:Key="PathStop" x:Shared="False" Stroke="Gray" StrokeThickness="2" Height="32" Width="32">
+        <Path.Data>
+            <GeometryGroup>
+                <LineGeometry StartPoint="8,8" EndPoint="24,24" />
+                <LineGeometry StartPoint="8,24" EndPoint="24,8" />
+            </GeometryGroup>
+        </Path.Data>
+    </Path>
+
+    <Path x:Key="PathDelete" x:Shared="False" Stroke="#808080" StrokeThickness="2" Height="32" Width="32">
+        <Path.Data>
+            <GeometryGroup>
+                <LineGeometry StartPoint="12,7" EndPoint="20,7" />
+                <LineGeometry StartPoint="8,10" EndPoint="24,10" />
+                <PathGeometry Figures="M 11,12 L 11,24 21,24 21,12" />
+            </GeometryGroup>
+        </Path.Data>
+    </Path>
+
+    <Path x:Key="PathView" x:Shared="False" Stroke="Gray" StrokeThickness="2" StrokeLineJoin="Miter" Height="32" Width="32">
+        <Path.Data>
+            <GeometryGroup>
+                <EllipseGeometry Center="13,13" RadiusX="6" RadiusY="6" />
+                <LineGeometry StartPoint="17,17" EndPoint="24,24" />
+            </GeometryGroup>
+        </Path.Data>
+    </Path>
+
+    <Path x:Key="PathBrowser" x:Shared="False" Stroke="Gray" StrokeThickness="2" Height="32" Width="32">
+        <Path.Data>
+            <GeometryGroup>
+                <PathGeometry Figures="M 7,12 25,12 25,23 7,23 7,8 16,8 16,12 " />
+            </GeometryGroup>
+        </Path.Data>
+    </Path>
+
+    <Path x:Key="PathLiteStop" x:Shared="False" Stroke="#A0FFFFFF" StrokeThickness="1" Width="20" Height="20" StrokeLineJoin="Bevel">
+        <Path.Data>
+            <GeometryGroup>
+                <LineGeometry StartPoint="6,6" EndPoint="14,14" />
+                <LineGeometry StartPoint="6,14" EndPoint="14,6" />
+            </GeometryGroup>
+        </Path.Data>
+    </Path>
+
+    <Path x:Key="PathLitePlay" x:Shared="False" Stroke="#A0FFFFFF" StrokeThickness="1" Width="20" Height="20" StrokeLineJoin="Miter">
+        <Path.Data>
+            <GeometryGroup>
+                <PathGeometry Figures="M 7.5,5.5 15,10 7.5,14.5 Z" />
+            </GeometryGroup>
+        </Path.Data>
+    </Path>
+</ResourceDictionary>

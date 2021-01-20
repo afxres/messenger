@@ -1,0 +1,139 @@
+﻿<UserControl x:Class="Messenger.ControlShareWorker"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:model="clr-namespace:Messenger.Models"
+             xmlns:tool="clr-namespace:Messenger.Tools"
+             mc:Ignorable="d"
+             d:DesignHeight="100" d:DesignWidth="300">
+    <UserControl.Resources>
+        <tool:LengthUnitConverter x:Key="LengthUnitConverter" />
+        <tool:ObjectTypeConverter x:Key="ObjectTypeConverter" />
+        <tool:StringEmptyConverter x:Key="StringEmptyConverter" />
+
+        <ControlTemplate x:Key="WorkerTemplate">
+            <Grid DataContext="{Binding}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="4" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <ProgressBar Name="uiProgress" Height="2" Grid.Row="2"
+                             Value="{Binding Path=Progress, Mode=OneWay}"
+                             SnapsToDevicePixels="True">
+                </ProgressBar>
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Name="uiTogglePanel" Grid.Column="1"
+                                Orientation="Horizontal" VerticalAlignment="Center"
+                                Button.Click ="_Click">
+                        <!--控制按钮-->
+                        <Button Name="PlayButton" Margin="8,0" Tag="play" ToolTip="启动传输"
+                                Content="{DynamicResource PathLitePlay}"
+                                Background="Transparent" BorderThickness="0" Padding="0" />
+                        <Button Name="StopButton" Tag="stop" ToolTip="关闭传输"
+                                Content="{DynamicResource PathLiteStop}"
+                                Background="Transparent" BorderThickness="0" Padding="0" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="0">
+                        <StackPanel Name="uiTitlePanel">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock FontSize="14" Name="uiPrefixText" />
+                                <TextBlock FontSize="14" Foreground="#FFA0A0A0" Text="{Binding Path=Name}" />
+                            </StackPanel>
+                            <TextBlock Name="PathText" Text="{Binding Path=Path}" />
+                        </StackPanel>
+                        <TextBlock Name="uiInfoText" />
+                    </StackPanel>
+                </Grid>
+            </Grid>
+            <ControlTemplate.Triggers>
+                <DataTrigger Binding="{Binding Path=Path, Converter={StaticResource StringEmptyConverter}}" Value="True">
+                    <Setter TargetName="PathText" Property="Visibility" Value="Collapsed" />
+                </DataTrigger>
+
+                <DataTrigger Binding="{Binding Path=IsBatch}" Value="False">
+                    <Setter TargetName="uiPrefixText" Property="Text" Value="[文件]" />
+                    <Setter TargetName="uiInfoText" Property="Text">
+                        <Setter.Value>
+                            <MultiBinding StringFormat="用户: {0}, {1} / {2}, {3:0.00}%, {4}/s, 状态: {5}, 剩余: {6:c}">
+                                <Binding Path="Profile.Name" Mode="OneWay" />
+                                <Binding Path="Position" Mode="OneWay" Converter="{StaticResource LengthUnitConverter}" />
+                                <Binding Path="Length" Mode="OneWay" Converter="{StaticResource LengthUnitConverter}" />
+                                <Binding Path="Progress" Mode="OneWay" />
+                                <Binding Path="Speed" Mode="OneWay" Converter="{StaticResource LengthUnitConverter}" />
+                                <Binding Path="Status" Mode="OneWay" />
+                                <Binding Path="Remain" Mode="OneWay" />
+                            </MultiBinding>
+                        </Setter.Value>
+                    </Setter>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Path=IsBatch}" Value="True">
+                    <Setter TargetName="uiPrefixText" Property="Text" Value="[文件夹]" />
+                    <Setter TargetName="uiInfoText" Property="Text">
+                        <Setter.Value>
+                            <MultiBinding StringFormat="用户: {0}, {1}, {2}/s, 状态: {3}">
+                                <Binding Path="Profile.Name" Mode="OneWay" />
+                                <Binding Path="Position" Mode="OneWay" Converter="{StaticResource LengthUnitConverter}" />
+                                <Binding Path="Speed" Mode="OneWay" Converter="{StaticResource LengthUnitConverter}" />
+                                <Binding Path="Status" Mode="OneWay" />
+                            </MultiBinding>
+                        </Setter.Value>
+                    </Setter>
+                </DataTrigger>
+
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding Path=IsBatch}" Value="True" />
+                        <Condition Binding="{Binding Path=Status}" Value="运行" />
+                    </MultiDataTrigger.Conditions>
+                    <MultiDataTrigger.Setters>
+                        <Setter TargetName="uiProgress" Property="IsIndeterminate" Value="True" />
+                    </MultiDataTrigger.Setters>
+                </MultiDataTrigger>
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding Converter={StaticResource ObjectTypeConverter}}" Value="{x:Type model:ShareReceiver}" />
+                        <Condition Binding="{Binding Path=IsStarted}" Value="True" />
+                    </MultiDataTrigger.Conditions>
+                    <MultiDataTrigger.Setters>
+                        <Setter TargetName="PlayButton" Property="Visibility" Value="Collapsed" />
+                    </MultiDataTrigger.Setters>
+                </MultiDataTrigger>
+                <DataTrigger Binding="{Binding Path=IsFinal}" Value="True">
+                    <Setter TargetName="uiTogglePanel" Property="Visibility" Value="Collapsed" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Converter={StaticResource ObjectTypeConverter}}" Value="{x:Type  model:ShareWorker}">
+                    <Setter TargetName="uiTitlePanel" Property="Visibility" Value="Collapsed" />
+                    <Setter TargetName="PlayButton" Property="Visibility" Value="Collapsed" />
+                </DataTrigger>
+
+                <DataTrigger Binding="{Binding Path=Status}" Value="连接">
+                    <Setter TargetName="uiProgress" Property="IsIndeterminate" Value="True" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Path=Status}" Value="中断">
+                    <Setter TargetName="uiProgress" Property="Foreground" Value="#FFDC143C" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Path=Status}" Value="成功">
+                    <Setter TargetName="uiProgress" Property="Foreground" Value="#FF20C000" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Path=Status}" Value="取消">
+                    <Setter TargetName="uiProgress" Property="Foreground" Value="#FFC0C000" />
+                </DataTrigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+    </UserControl.Resources>
+    <UserControl.Style>
+        <Style TargetType="UserControl">
+            <Style.Setters>
+                <Setter Property="FontSize" Value="12" />
+                <Setter Property="Foreground" Value="#FF808080" />
+                <Setter Property="Template" Value="{StaticResource WorkerTemplate}" />
+            </Style.Setters>
+        </Style>
+    </UserControl.Style>
+</UserControl>

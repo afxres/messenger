@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFrameworks>netcoreapp3.1;net472</TargetFrameworks>
+    <AssemblyName>Launcher</AssemblyName>
+    <RootNamespace>Launcher</RootNamespace>
+    <LangVersion>8.0</LangVersion>
+    <ApplicationIcon>App.ico</ApplicationIcon>
+    <Product>Messenger Project</Product>
+    <Authors>Mikodev</Authors>
+    <Copyright>Mikodev 2020</Copyright>
+    <Version>1.9.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Links\Links.csproj" />
+    <ProjectReference Include="..\Logger\Logger.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Launcher.settings.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

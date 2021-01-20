@@ -1,0 +1,228 @@
+﻿<Page x:Class="Messenger.Chatter"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:local="clr-namespace:Messenger"
+      xmlns:model="clr-namespace:Messenger.Models"
+      xmlns:module="clr-namespace:Messenger.Modules"
+      xmlns:tool="clr-namespace:Messenger.Tools"
+      mc:Ignorable="d"
+      d:DesignHeight="300" d:DesignWidth="500"
+      KeepAlive="False" FontSize="14">
+    <Page.Resources>
+        <tool:LengthUnitConverter x:Key="LengthUnitConverter" />
+        <tool:StringEmptyConverter x:Key="StringEmptyConverter" />
+        <tool:ObjectTypeConverter x:Key="ObjectTypeConverter" />
+
+        <!--消息模板-->
+        <ControlTemplate x:Key="MessageTemplate">
+            <Grid Margin="0,6" Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ScrollContentPresenter}, Path=ActualWidth}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="48" />
+                    <ColumnDefinition Name="LeftDefinition" Width="0" />
+                    <ColumnDefinition />
+                    <ColumnDefinition Name="RightDefinition" Width="48" />
+                    <ColumnDefinition Width="48" />
+                </Grid.ColumnDefinitions>
+                <local:ControlProfileImage x:Name="ProfileImage" Grid.Column="0" Height="32" Width="32"
+                                           HorizontalAlignment="Center"  VerticalAlignment="Top"
+                                           DataContext="{Binding Path=Profile}" />
+                <Grid Grid.Column="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0" Margin="0,4" HorizontalAlignment="Left">
+                        <TextBlock Foreground="#FF808080" FontSize="12">
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat="{}{0} {1:HH:mm:ss}">
+                                    <Binding Path="Profile.Name" />
+                                    <Binding Path="DateTime" />
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                    </Grid>
+                    <Grid Grid.Row="1" Background="{TemplateBinding Background}">
+                        <TextBox Name="ViewTextBox" Padding="4" BorderThickness="0"
+                                 FocusVisualStyle="{DynamicResource GenericFocusVisualStyle}"
+                                 TextWrapping="Wrap" IsReadOnly="True"
+                                 Background="Transparent" SelectionBrush="LightGreen"
+                                 Foreground="#C0C0C0" Visibility="Collapsed">
+                            <TextBox.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Command="ApplicationCommands.Copy" Header="复制选定内容" />
+                                    <MenuItem Command="{x:Static local:Commands.CopyText}" />
+                                    <MenuItem Command="{x:Static local:Commands.Remove}" />
+                                </ContextMenu>
+                            </TextBox.ContextMenu>
+                        </TextBox>
+                        <Image Name="ViewImage" HorizontalAlignment="Left"
+                               Stretch="None" Visibility="Collapsed">
+                            <Image.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Command="{x:Static local:Commands.ViewImage}" />
+                                    <MenuItem Command="{x:Static local:Commands.Remove}" />
+                                </ContextMenu>
+                            </Image.ContextMenu>
+                        </Image>
+                        <Control Name="ViewControl" Margin="4" Focusable="False" Visibility="Collapsed" DataContext="{Binding Path=Object}" />
+                        <Grid.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Command="{x:Static local:Commands.Remove}" />
+                            </ContextMenu>
+                        </Grid.ContextMenu>
+                    </Grid>
+                </Grid>
+            </Grid>
+            <ControlTemplate.Triggers>
+                <DataTrigger Binding="{Binding Path=Source}" Value="{x:Static module:LinkModule.Id}">
+                    <Setter Property="Background" Value="#2B3335" />
+                    <Setter Property="HorizontalAlignment" Value="Right" />
+                    <Setter TargetName="ProfileImage" Property="Grid.Column" Value="4" />
+                    <Setter TargetName="LeftDefinition" Property="Width" Value="48" />
+                    <Setter TargetName="RightDefinition" Property="Width" Value="0" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Path=Path}" Value="text">
+                    <Setter TargetName="ViewTextBox" Property="Visibility" Value="Visible" />
+                    <Setter TargetName="ViewTextBox" Property="Text" Value="{Binding Path=MessageText, Mode=OneWay}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Path=Path}" Value="image">
+                    <Setter TargetName="ViewImage" Property="Visibility" Value="Visible" />
+                    <Setter TargetName="ViewImage" Property="Source" Value="{Binding Path=MessageImage}" />
+                </DataTrigger>
+
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding Path=Path}" Value="share" />
+                        <Condition Binding="{Binding Path=Object, Converter={StaticResource ObjectTypeConverter}}" Value="{x:Type model:ShareReceiver}" />
+                    </MultiDataTrigger.Conditions>
+                    <MultiDataTrigger.Setters>
+                        <Setter TargetName="ViewControl" Property="Visibility" Value="Visible" />
+                        <Setter TargetName="ViewControl" Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate>
+                                    <local:ControlShareWorker />
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </MultiDataTrigger.Setters>
+                </MultiDataTrigger>
+
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding Path=Path}" Value="share" />
+                        <Condition Binding="{Binding Path=Object, Converter={StaticResource ObjectTypeConverter}}" Value="{x:Type model:Share}" />
+                    </MultiDataTrigger.Conditions>
+                    <MultiDataTrigger.Setters>
+                        <Setter TargetName="ViewControl" Property="Visibility" Value="Visible" />
+                        <Setter TargetName="ViewControl" Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate>
+                                    <local:ControlShare />
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </MultiDataTrigger.Setters>
+                </MultiDataTrigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+
+        <ControlTemplate x:Key="MessageNotice">
+            <Grid Margin="0,4" Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ScrollContentPresenter}, Path=ActualWidth}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Margin="0,4" Foreground="#FF808080" FontSize="12"
+                           HorizontalAlignment="Center"
+                           Text="{Binding Path=DateTime, StringFormat=HH:mm:ss}">
+                </TextBlock>
+                <Grid Grid.Row="1" HorizontalAlignment="Center">
+                    <TextBlock FontSize="12" Foreground="#FF808080">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="{}{0} {1}">
+                                <Binding Path="Profile.Name" />
+                                <Binding Path="MessageNotice" />
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+                </Grid>
+            </Grid>
+        </ControlTemplate>
+    </Page.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid x:Name="uiProfileGrid" Grid.Row="0" VerticalAlignment="Top" SnapsToDevicePixels="True">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <local:ControlProfileImage Grid.Column="0" Margin="10" Width="64" Height="64" />
+                <StackPanel Grid.Column="1" Margin="0,10" VerticalAlignment="Bottom">
+                    <TextBlock FontSize="24" Foreground="#C0C0C0" FontWeight="Light" Text="{Binding Path=Name}" />
+                    <TextBlock FontSize="12" Foreground="#808080" FontStyle="Italic" Text="{Binding Path=Text}" />
+                </StackPanel>
+            </Grid>
+            <Border Grid.Row="1" Height="1" Background="#202020" />
+        </Grid>
+        <Grid Margin="5" Grid.Row="1" SnapsToDevicePixels="True">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="8*" MinWidth="500" />
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+            <ListBox x:Name="uiMessageBox" Grid.Column="1" BorderThickness="0" Background="Transparent" Style="{StaticResource ThinListBox}">
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="FocusVisualStyle" Value="{DynamicResource GenericFocusVisualStyle}" />
+                        <Setter Property="Background" Value="#303030" />
+                        <Setter Property="HorizontalAlignment" Value="Left" />
+                        <Setter Property="Template" Value="{StaticResource MessageTemplate}" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Path=Path}" Value="notice">
+                                <Setter Property="Template" Value="{StaticResource MessageNotice}" />
+                            </DataTrigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#202020" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+            </ListBox>
+        </Grid>
+        <Grid Grid.Row="2" Width="{Binding ElementName=uiMessageBox, Path=ActualWidth}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="5" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Border Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" Background="SteelBlue" Height="1" SnapsToDevicePixels="True" />
+            <TextBox x:Name="uiInputBox" Grid.Column="0" Grid.Row="2" Margin="5" Background="Transparent" Foreground="#C0C0C0" CaretBrush="#808080" BorderThickness="0"
+                     MinHeight="34" MaxHeight="100" AcceptsReturn="True" VerticalContentAlignment="Center" TextWrapping="Wrap" Tag="请输入文字或拖动文件到此处"
+                     AllowDrop="True" PreviewDragOver="_TextBoxPreviewDragOver" PreviewDrop="_TextBoxPreviewDrop" SelectionBrush="LightGreen">
+            </TextBox>
+            <StackPanel Grid.Column="1" Grid.Row="2" Margin="5" Orientation="Horizontal" VerticalAlignment="Center" Button.Click="_Click">
+                <Button Tag="clean" VerticalAlignment="Center" Content="{DynamicResource PathRemove}" ToolTip="清空消息列表" Padding="0" Background="Transparent" BorderThickness="0" />
+                <Control Width="5" Focusable="False" />
+                <Button Tag="image" VerticalAlignment="Center" Content="{DynamicResource PathImage}" ToolTip="发送图片" Padding="0" Background="Transparent" BorderThickness="0" />
+                <Control Width="15" Focusable="False" />
+                <Button Tag="text" Content="{DynamicResource PathArrow}" Style="{DynamicResource GeometryButtonStyle}" ToolTip="发送" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Page>

@@ -1,0 +1,70 @@
+﻿<UserControl x:Class="Messenger.ControlProfileImage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:tool="clr-namespace:Messenger.Tools"
+             mc:Ignorable="d"
+             Style="{DynamicResource ProfileImageControlStyle}"
+             d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <tool:StringEmptyConverter x:Key="StringEmptyConverter" />
+        <tool:ProfileLogoConverter x:Key="ProfileLogoConverter" />
+        <tool:ImageSourceConverter x:Key="ImageSourceConverter" />
+
+        <Style x:Key="ProfileImageControlStyle" TargetType="UserControl">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="UserControl">
+                        <Viewbox>
+                            <Grid Width="32" Height="32">
+                                <Grid Name="DefaultImagePanel">
+                                    <Ellipse Fill="Gray" />
+                                    <TextBlock FontSize="12" Foreground="White"
+                                               Text="{Binding Path=Name, Converter={StaticResource ProfileLogoConverter}}"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    </TextBlock>
+                                </Grid>
+                                <Grid Name="GroupImagePanel" Visibility="Hidden">
+                                    <Path Width="32" Height="32" Fill="SteelBlue">
+                                        <Path.Data>
+                                            <GeometryGroup>
+                                                <PathGeometry Figures="M8,2.1435 24,2.1435 32,16 24,29.8564 8,29.8564 0,16 Z" />
+                                            </GeometryGroup>
+                                        </Path.Data>
+                                        <Path.Effect>
+                                            <DropShadowEffect ShadowDepth="0" Color="White" />
+                                        </Path.Effect>
+                                    </Path>
+                                    <TextBlock FontSize="12" Foreground="White"
+                                               Text="{Binding Path=Name, Converter={StaticResource ProfileLogoConverter}}"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    </TextBlock>
+                                </Grid>
+                                <Ellipse Name="CircleImageSharp" Visibility="Hidden" RenderOptions.BitmapScalingMode="HighQuality" />
+                            </Grid>
+                        </Viewbox>
+                        <ControlTemplate.Triggers>
+                            <DataTrigger Binding="{Binding Path=IsGroup}" Value="True">
+                                <Setter TargetName="GroupImagePanel" Property="Visibility" Value="Visible" />
+                                <Setter TargetName="DefaultImagePanel" Property="Visibility" Value="Hidden" />
+                            </DataTrigger>
+
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding Path=IsClient}" Value="True" />
+                                    <Condition Binding="{Binding Path=Image, Converter={StaticResource StringEmptyConverter}}" Value="False" />
+                                </MultiDataTrigger.Conditions>
+                                <MultiDataTrigger.Setters>
+                                    <Setter TargetName="CircleImageSharp" Property="Visibility" Value="Visible" />
+                                    <Setter TargetName="DefaultImagePanel" Property="Visibility" Value="Hidden" />
+                                    <Setter TargetName="CircleImageSharp" Property="Fill" Value="{Binding Path=Image, Converter={StaticResource ImageSourceConverter}}" />
+                                </MultiDataTrigger.Setters>
+                            </MultiDataTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+</UserControl>

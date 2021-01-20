@@ -1,0 +1,130 @@
+﻿<Page x:Class="Messenger.Connection"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:tool="clr-namespace:Messenger.Tools"
+      mc:Ignorable="d"
+      d:DesignHeight="320" d:DesignWidth="480"
+      KeepAlive="False" FontSize="14">
+    <Page.Resources>
+        <ControlTemplate x:Key="HostTemplate" TargetType="ListBoxItem">
+            <Grid>
+                <Border Background="{TemplateBinding Background}" />
+                <Grid Margin="5" TextBlock.FontSize="12"  SnapsToDevicePixels="True">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Column="0" Grid.Row="0" Margin="5,0" FontSize="14" Foreground="#FFA0A0A0"  HorizontalAlignment="Left">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="名称: {0}">
+                                <Binding Path="Name" />
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+                    <TextBlock Grid.Column="0" Grid.Row="1" Margin="5,0" Foreground="#FF808080" HorizontalAlignment="Left">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="地址: {0}:{1}">
+                                <Binding Path="Address" />
+                                <Binding Path="Port" />
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+                    <TextBlock Grid.Column="1" Grid.Row="0" Margin="5,0" Foreground="#FF808080" HorizontalAlignment="Right">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="[{0} / {1}]">
+                                <Binding Path="Count" />
+                                <Binding Path="CountLimit" />
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+                    <TextBlock Grid.Column="1" Grid.Row="1" Margin="5,0" Foreground="#FF808080" HorizontalAlignment="Right">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat=" {0} ms">
+                                <Binding Path="Delay" />
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+                </Grid>
+            </Grid>
+        </ControlTemplate>
+    </Page.Resources>
+    <Grid HorizontalAlignment="Center" VerticalAlignment="Center" SnapsToDevicePixels="True">
+        <Border Background="#FF202020">
+            <Border.Effect>
+                <DropShadowEffect Color="#FFFFFFFF" ShadowDepth="0" />
+            </Border.Effect>
+        </Border>
+        <StackPanel>
+            <TextBlock Margin="10" HorizontalAlignment="Center" FontSize="24" Foreground="#FFA0A0A0">连接</TextBlock>
+            <Grid x:Name="uiTableGrid" Margin="10,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="280" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition Height="10" />
+                    <RowDefinition />
+                    <RowDefinition Height="10" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Label Grid.Column="0" Grid.Row="0" Foreground="#A0A0A0" Target="{Binding ElementName=uiHostBox}">主机(_H)</Label>
+                <TextBox x:Name="uiHostBox" Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" Style="{DynamicResource TextBoxWithErrorTip}" />
+                <Label Grid.Column="0" Grid.Row="2" Foreground="#A0A0A0" Target="{Binding ElementName=uiPortBox}">端口(_P)</Label>
+                <TextBox x:Name="uiPortBox" Grid.Column="1" Grid.Row="2" VerticalAlignment="Center" Style="{DynamicResource TextBoxWithErrorTip}">
+                    <TextBox.Text>
+                        <Binding Path="P" UpdateSourceTrigger="PropertyChanged" Delay="200">
+                            <Binding.ValidationRules>
+                                <tool:SocketPortValidation />
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </TextBox.Text>
+                </TextBox>
+                <Label Grid.Column="0" Grid.Row="4" Foreground="#A0A0A0" Target="{Binding ElementName=uiIdBox}">编号(_N)</Label>
+                <TextBox x:Name="uiIdBox" Grid.Column="1" Grid.Row="4" VerticalAlignment="Center" Style="{DynamicResource TextBoxWithErrorTip}">
+                    <TextBox.Text>
+                        <Binding Path="I" UpdateSourceTrigger="PropertyChanged" Delay="200">
+                            <Binding.ValidationRules>
+                                <tool:ProfileIdValidation />
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </TextBox.Text>
+                </TextBox>
+            </Grid>
+            <Grid x:Name="uiListGrid" Visibility="Collapsed">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="10" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <ListBox x:Name="uiServerList" Grid.Row="1" Height="108" BorderThickness="0" Background="Transparent"
+                     Style="{StaticResource ThinListBox}">
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="Background" Value="Transparent" />
+                            <Setter Property="Template" Value="{StaticResource HostTemplate}" />
+                            <Style.Triggers>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="Background" Value="#FF101010" />
+                                </Trigger>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#FF404040" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                </ListBox>
+            </Grid>
+            <StackPanel Margin="5,10" Orientation="Horizontal" HorizontalAlignment="Right" Button.Click="_Click">
+                <Button x:Name="uiRefreshButton" Margin="5,0" Width="80" Visibility="Collapsed">刷新</Button>
+                <Button x:Name="uiBrowserButton" Margin="5,0" Width="80">服务器</Button>
+                <Button x:Name="uiConnectButton" Margin="5,0" Width="80">连接</Button>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Page>

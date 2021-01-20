@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<settings>
+  <setting key="server-name" value="Do Not Enter!" />
+  <setting key="listen-address" value="0.0.0.0" />
+  <setting key="client-limits" value="256" />
+  <setting key="tcp-port" value="7550" />
+  <setting key="udp-port" value="7550" />
+</settings>

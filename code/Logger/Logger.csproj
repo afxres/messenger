@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <AssemblyName>Mikodev.Logger</AssemblyName>
+    <RootNamespace>Mikodev.Network</RootNamespace>
+    <Product>Messenger Project</Product>
+    <Authors>Mikodev</Authors>
+    <Copyright>Mikodev 2020</Copyright>
+    <Version>1.9.0</Version>
+  </PropertyGroup>
+
+</Project>

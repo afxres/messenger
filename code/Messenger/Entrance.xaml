@@ -1,0 +1,181 @@
+﻿<Window x:Class="Messenger.Entrance"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:module="clr-namespace:Messenger.Modules"
+        xmlns:tool="clr-namespace:Messenger.Tools"
+        mc:Ignorable="d" FontSize="14"
+        Width="960" Height="540" MinWidth="960" MinHeight="540"
+        WindowStartupLocation="CenterScreen"
+        Style="{DynamicResource FlatWindowStyle}">
+    <Window.Resources>
+        <!--#region Flat window style-->
+        <tool:LogicToPixelConverter x:Key="LogicToPixelConverter" />
+
+        <Thickness x:Key="WindowBorderMargin">1</Thickness>
+
+        <Style x:Key="MenuPathStyle" TargetType="Path">
+            <Setter Property="StrokeThickness" Value="1" />
+            <Setter Property="Stroke" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Button}, Path=Foreground}" />
+        </Style>
+
+        <!--#region Menu icons-->
+        <Path x:Key="MenuIconMin" x:Shared="False" Style="{StaticResource MenuPathStyle}">
+            <Path.Data>
+                <LineGeometry StartPoint="0,0.5" EndPoint="10,0.5" />
+            </Path.Data>
+        </Path>
+        <Path x:Key="MenuIconMax" x:Shared="False" Style="{StaticResource MenuPathStyle}">
+            <Path.Data>
+                <PathGeometry Figures="M 0.5,0.5 L 9.5,0.5 9.5,9.5 0.5,9.5 Z" />
+            </Path.Data>
+        </Path>
+        <Path x:Key="MenuIconNormal" x:Shared="False" Style="{StaticResource MenuPathStyle}">
+            <Path.Data>
+                <GeometryGroup>
+                    <PathGeometry Figures="M 0.5,2.5 L 7.5,2.5 7.5,9.5 0.5,9.5 Z" />
+                    <PathGeometry Figures="M 2.5,2.5 L 2.5,0.5 9.5,0.5 9.5,7.5 7.5,7.5" />
+                </GeometryGroup>
+            </Path.Data>
+        </Path>
+        <Path x:Key="MenuIconExit" x:Shared="False" Style="{StaticResource MenuPathStyle}">
+            <Path.Data>
+                <GeometryGroup>
+                    <LineGeometry StartPoint="0,10" EndPoint="10,0" />
+                    <LineGeometry StartPoint="0,0" EndPoint="10,10" />
+                </GeometryGroup>
+            </Path.Data>
+        </Path>
+        <!--#endregion-->
+
+        <SolidColorBrush x:Key="Button.Static.Background" Color="#00000000" />
+        <SolidColorBrush x:Key="Button.Static.Foreground" Color="#FFC0C0C0" />
+        <SolidColorBrush x:Key="Button.MouseOver.Background" Color="#20FFFFFF" />
+        <SolidColorBrush x:Key="Button.Pressed.Background" Color="#40FFFFFF" />
+        <Style x:Key="MenuButtonStyle" TargetType="{x:Type Button}">
+            <Setter Property="Background" Value="{StaticResource Button.Static.Background}" />
+            <Setter Property="Foreground" Value="{StaticResource Button.Static.Foreground}" />
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="Width" Value="46" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="Border" Background="{TemplateBinding Background}" Focusable="{TemplateBinding Focusable}" SnapsToDevicePixels="true">
+                            <ContentPresenter x:Name="ContentPresenter" Focusable="{TemplateBinding Focusable}"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              RecognizesAccessKey="True"
+                                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" TargetName="Border" Value="{StaticResource Button.MouseOver.Background}" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" TargetName="Border" Value="{StaticResource Button.Pressed.Background}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <SolidColorBrush x:Key="Border.Active.Background" Color="#FF383838" />
+        <ControlTemplate x:Key="FlatWindowTemplate" TargetType="Window">
+            <Border Name="BasicBorder" Loaded="_BorderLoaded" SnapsToDevicePixels="True">
+                <Grid Name="BasicGrid"
+                      Margin="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource LogicToPixelConverter}, ConverterParameter={StaticResource WindowBorderMargin}}"
+                      Background="{TemplateBinding Background}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Name="TitleRow" Height="30" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid Name="TitleGrid" Grid.Row="0"
+                          Background="Transparent"
+                          MouseLeftButtonDown="_MouseLeftButtonDown"
+                          SnapsToDevicePixels="True">
+                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12"
+                                   Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}, Path=Title}" />
+                        <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Button.Click="_PanelClick" SnapsToDevicePixels="True">
+                            <Button Name="MenuMin" Tag="min" Content="{StaticResource MenuIconMin}" Style="{StaticResource MenuButtonStyle}" />
+                            <Button Name="MenuMax" Tag="max" Content="{StaticResource MenuIconMax}" Style="{StaticResource MenuButtonStyle}" />
+                            <Button Name="MenuExit" Tag="exit" Content="{StaticResource MenuIconExit}" Style="{StaticResource MenuButtonStyle}" />
+                        </StackPanel>
+                    </Grid>
+                    <Border Grid.Row="1"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                        <AdornerDecorator>
+                            <ContentPresenter />
+                        </AdornerDecorator>
+                    </Border>
+                </Grid>
+            </Border>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsActive" Value="True">
+                    <Setter TargetName="TitleGrid" Property="Background" Value="{StaticResource Border.Active.Background}" />
+                    <Setter TargetName="BasicBorder" Property="BorderBrush" Value="#FF202020" />
+                </Trigger>
+                <Trigger Property="WindowState" Value="Maximized">
+                    <Setter TargetName="MenuMax" Property="Content" Value="{StaticResource MenuIconNormal}" />
+                    <Setter TargetName="BasicGrid" Property="Margin" Value="4" />
+                    <Setter TargetName="BasicBorder" Property="BorderThickness" Value="{Binding Source={x:Static SystemParameters.WindowResizeBorderThickness}}" />
+                </Trigger>
+                <Trigger Property="ResizeMode" Value="CanMinimize">
+                    <Setter TargetName="MenuMax" Property="Visibility" Value="Collapsed" />
+                </Trigger>
+                <Trigger Property="ResizeMode" Value="NoResize">
+                    <Setter TargetName="MenuMin" Property="Visibility" Value="Hidden" />
+                    <Setter TargetName="MenuMax" Property="Visibility" Value="Hidden" />
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+
+        <Style x:Key="FlatWindowStyle" TargetType="Window">
+            <Setter Property="Foreground" Value="#C0C0C0" />
+            <Setter Property="Background" Value="#282828" />
+            <Setter Property="Template" Value="{StaticResource FlatWindowTemplate}" />
+            <Setter Property="ResizeMode" Value="CanResize" />
+            <Setter Property="WindowStyle" Value="SingleBorderWindow" />
+            <Setter Property="WindowChrome.WindowChrome">
+                <Setter.Value>
+                    <WindowChrome CaptionHeight="0"
+                                  CornerRadius="0"
+                                  GlassFrameThickness="4"
+                                  ResizeBorderThickness="4"
+                                  UseAeroCaptionButtons="False" />
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <!--#endregion-->
+    </Window.Resources>
+
+    <Window.Title>
+        <Binding Source="{x:Static module:ProfileModule.Current}" Path="Name" />
+    </Window.Title>
+    <Grid>
+        <Frame x:Name="frame" Source="Connection.xaml" />
+        <Grid x:Name="uiMessagePanel" Visibility="Collapsed">
+            <Border Background="#80000000" />
+            <Grid MaxWidth="720" MaxHeight="480" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="5"></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Border Grid.Row="0" Grid.RowSpan="5" Background="#FF202020">
+                    <Border.Effect>
+                        <DropShadowEffect Color="#FFFFFFFF" ShadowDepth="0" />
+                    </Border.Effect>
+                </Border>
+                <TextBlock x:Name="uiHeadText" Grid.Row="0" Margin="10" Foreground="#FFA0A0A0" FontSize="24" />
+                <TextBlock Grid.Row="1" Margin="10,0" Foreground="#FF808080" Text="异常信息" />
+                <TextBox x:Name="uiContentText" Grid.Row="3" Margin="5,0" FontSize="12" Foreground="#FF808080" Background="Transparent" BorderThickness="0" IsReadOnly="True" />
+                <Button Tag="confirm" Grid.Row="4" Margin="10" Width="80" HorizontalAlignment="Right" Click="_Click" Content="确定" />
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>

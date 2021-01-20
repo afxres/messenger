@@ -1,0 +1,56 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:Messenger"
+                    xmlns:tool="clr-namespace:Messenger.Tools">
+
+    <Style x:Key="ProfileItemStyle" TargetType="ListBoxItem">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="FocusVisualStyle" Value="{DynamicResource GenericFocusVisualStyle}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ListBoxItem">
+                    <Grid MaxWidth="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=ActualWidth}">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" />
+                        <Grid Margin="10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <local:ControlProfileImage Grid.Column="0" Width="32" Height="32" />
+                            <StackPanel Grid.Column="1" Margin="10,0">
+                                <TextBlock FontSize="14" Foreground="#C0C0C0" Text="{Binding Path=Name}" />
+                                <TextBlock FontSize="12" Foreground="#808080" Text="{Binding Path=Text}" HorizontalAlignment="Left" ToolTip="{Binding Path=Text}" />
+                            </StackPanel>
+                            <Grid x:Name="gridHint" Grid.Column="3">
+                                <Ellipse Width="16" Height="16" Fill="#FFE04048" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                <TextBlock HorizontalAlignment="Center" FontSize="10" VerticalAlignment="Center" Foreground="White">
+                                    <TextBlock.Text>
+                                        <Binding Path="Hint">
+                                            <Binding.Converter>
+                                                <tool:ProfileHintConverter />
+                                            </Binding.Converter>
+                                        </Binding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <DataTrigger Binding="{Binding Path=Hint}" Value="0">
+                            <Setter TargetName="gridHint" Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="#10FFFFFF" />
+            </Trigger>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter Property="Background" Value="#80000000" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+</ResourceDictionary>
